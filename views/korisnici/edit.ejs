@@ -1,0 +1,7 @@
+<h2 style="padding-top: 20px;">Edit profil</h2>
+
+<form action="/korisnici/<%= korisnik.id %>?_method=PUT" method="POST">
+    <%- include("_form_fields") %> 
+    <a href="/korisnici/<%= korisnik.id %>">Cancel</a>
+    <button type="submit">Save</button>
+</form>

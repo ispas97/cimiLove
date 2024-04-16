@@ -1,0 +1,8 @@
+<ul>
+    <%poruke.forEach( por=> { %>
+        <form action="/korisnici/<%= por.posiljaocId %>/<%= por.primaocId %>" method="POST">
+            <label><%= por.posiljaoc %>:<%=por.sadrzaj%>,Sent:<%=por.SentAt.toISOString().replace('T',',').split('.')[0] %></label>
+            <button type="submit">Visit <%=por.posiljaoc %>'s chat</button>
+        </form> 
+    <% }) %>
+</ul> 

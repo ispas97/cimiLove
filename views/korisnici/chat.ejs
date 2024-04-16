@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatApp</title>
+    <script  src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    
+    <style>
+        body {
+          padding: 0;
+          margin: 0;
+          display: flex;
+          justify-content: center;
+        }
+    
+        #message-container {
+          width: 70%;
+          max-width: 1200px;
+        }
+    
+        #message-container div {
+          background-color: #AAA;
+          padding: 5px;
+        }
+    
+        #message-container div:nth-child(2n) {
+          background-color: #dddddd;
+          
+        }
+    
+        #send-container {
+          position: fixed;
+          padding-bottom: 30px;
+          bottom: 0;
+          background-color: rgb(255, 255, 255);
+          max-width: 1200px;
+          width: 80%;
+          display: flex;
+        }
+    
+        #message-input {
+          flex-grow: 1;
+        }
+      </style>
+</head>
+<body>
+    <input type="text" value="<%=korisnik%>" id="inputkorisnik" hidden>
+    <input type="text" value="<%=user%>" id="inputuser" hidden>
+    <div id="message-container" style="margin-top: 100px;"></div>0
+  <form id="send-container">
+    <input type="text" id="message-input">
+    <button type="submit" id="send-button">Send</button>
+  </form>
+  <script>
+      const socket=io("http://localhost:3001")
+      const messageForm=document.getElementById('send-container')
+      const messageInput=document.getElementById('message-input')
+      const messageContainer=document.getElementById('message-container')
+      const inputUser=document.getElementById('inputuser')
+      const userime=inputUser.value
+      const inputKorisnik=document.getElementById('inputkorisnik')
+      const korisnikime=inputKorisnik.value
+
+/* 
+      const name =prompt('What is your name?') */
+
+      const poruke=<%- poruke %>
+      console.log(poruke)
+      
+      poruke.forEach((mes)=> { 
+        if (mes.posiljaoc===userime)
+            {
+                mes.sadrzaj='You:'+mes.sadrzaj
+                appendMessage(mes.sadrzaj)
+            }
+            else{
+                mes.sadrzaj=mes.posiljaoc+':'+mes.sadrzaj
+                appendMessage(mes.sadrzaj)
+            }
+       
+    })
+
+       socket.emit('new-user',{user:userime,korisnik:korisnikime}) 
+
+
+      socket.on('chat-message', (data)=>{
+
+        appendMessage(`${data.posiljaoc}:${data.message}`)
+                /* appendMessage(`${data.posiljaoc}:${data.message}`)
+        const primaoc=userime
+        socket.emit('send-message-info',{message:data.message,posiljaoc:data.posiljaoc,primaoc:primaoc}) */
+    })
+
+    socket.on('user-connected',name=>{
+    appendMessage(`${name} connected`)
+})
+
+socket.on('user-disconnected',name=>{
+    appendMessage(`${name} disconnected`)
+})
+
+    messageForm.addEventListener('submit',e=>
+    {
+        e.preventDefault()
+        const message = messageInput.value
+        appendMessage(`You:${message}`)
+        socket.emit('send-chat-message',{message:message,posiljaoc:userime,primaoc:korisnikime })
+        messageInput.value=''
+    }) 
+    function appendMessage(message)
+{
+    const messageElement=document.createElement('div')
+    messageElement.innerText=message
+    messageContainer.appendChild(messageElement)
+}
+  </script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<h2 style="padding-top: 20px;"><%= korisnik.ime %></h2>
+<div>
+    <img height="150" width="200" src="<%=korisnik.coverImagePath%>" alt="">
+</div>
+<h2>Rating:<%=korisnik.ratingavg%></h2>
+<% if (user.username!==korisnik.username && user.username!=="anonimus") { %>
+<form action="/korisnici/<%= korisnik.id %>" method="POST">
+<% if (mozeDaGlasa==true) { %>
+    <div class="sadrzi">
+        <label>Oceni:</label>
+        <div class="rating">
+            <input type="radio" name="star" id="star1" value='5'><label for="star1">
+            </label>
+            <input type="radio" name="star" id="star2" value='4'><label for="star2">
+            </label>
+            <input type="radio" name="star" id="star3" value='3'><label for="star3">
+            </label>
+            <input type="radio" name="star" id="star4" value='2'><label for="star4">
+            </label>
+            <input type="radio" name="star" id="star5" value='1'><label for="star5">
+            </label>
+        </div>
+    </div>
+    <button type="submit">Glasaj</button>
+<% } %>
+</form>
+<% } %>
+<% if (korisnik.username==user.username || user.role==="admin") { %>
+<a href="/korisnici/<%= korisnik.id %>/edit">Edit</a>
+<%- include("../partials/deleteForm", 
+            { url: `/korisnici/${korisnik.id}` })%>
+    <% if (user.role !== "admin") { %>
+<button id="svrhaOglasa">Dodaj oglas</button>
+<div id="divPrekrivac" style="display: none;">
+    <div class="divSredina">
+        <div class="divSvrha">
+            <form action="/oglasi/new" method="POST">
+                <input  name="svrhaOglasa" value="tcis" style="display: none;">
+                <input  name="korId" value="<%= korisnik.id %>" style="display: none;">
+                <button name="dugme" value="<%= korisnik.id %>" class="svrhaDugme">Trazim cimera i imam stan</button>
+            </form>
+        </div>
+        <div class="divSvrha">
+            <form action="/oglasi/new" method="POST">
+                <input  name="svrhaOglasa" value="tcns" style="display: none;">
+                <input  name="korId" value="<%= korisnik.id %>" style="display: none;">
+                <button class="svrhaDugme">Trazim cimera i nemam stan</button>
+            </form>
+        </div>
+        <div class="divSvrha">
+            <form action="/oglasi/new" method="POST">
+                <input  name="svrhaOglasa" value="izst" style="display: none;">
+                <input  name="korId" value="<%= korisnik.id %>" style="display: none;">
+                <button class="svrhaDugme">Izdajem stan</button>
+            </form>
+        </div>
+        <div class="divCancel">
+            <button id="nazadDugme">Nazad</button>
+        </div>
+    </div>
+</div>
+<% } %>
+<% if(oglasi.length > 0){ %>
+    <h2>Tvoji oglasi</h2>
+    <% oglasi.forEach(oglas => { %>
+        <a href="/oglasi/<%= oglas.id %>">
+            <div style="border: 2px solid black; margin-bottom: 10px; cursor: pointer;">
+                <div>Naziv grada: <%= oglas.nazivGrada %></div>
+                <div>Cena <%= oglas.cena %></div>
+                <% if (oglas.svrhaOglasa === "tcns") {%> 
+                    <img height="150" width="200" src="<%=oglas.korisnikId.coverImagePath%>" alt="Slika se ne ucitava"> <%# Mozemo coverImageName, ali mi zelimo coverImagePath -> zato pravimo virtual varijablu u oglas.js modelu %> 
+                <% } else {%> 
+                    <% if (oglas.slike.length === 0) {%> 
+                        <img height="150" width="200" src="<%=oglas.coverImagePathDefault%>" alt=""> <%# Mozemo coverImageName, ali mi zelimo coverImagePath -> zato pravimo virtual varijablu u book.js modelu %> 
+                    <% } else {%>
+                        <img height="150" width="200" src="<%=oglas.coverImagePath[0]%>" alt="">
+                    <% } %> 
+                <% } %> 
+            </div>
+        </a>
+    <% }) %>
+<% } %> 
+<% } %>
+<% if (korisnik.username!==user.username && user.role!=="anonimac") { %>
+    <form action="/korisnici/<%=korisnik.id%>/<%= user.id %>" method="POST">
+        <input type="text" name="idkorisnika" value="<%=korisnik.id%>" hidden>
+        <button type="submit">Chat</button>
+    </form>
+<% } %>
+<% if (korisnik.username===user.username) { %>
+<form action="/korisnici/recentmessages/<%=user.id%>" method="POST">
+    <button type="submit">Recent Chats</button>
+</form>
+<% } %>
+
+<script>
+    var addOglas = document.getElementById("svrhaOglasa");
+    addOglas.addEventListener("click", prikaziFormu);
+
+    var divPrekrivac = document.getElementById("divPrekrivac");
+
+    function prikaziFormu(){
+        divPrekrivac.style.display = "block";
+    }
+
+
+    var nazad = document.getElementById("nazadDugme");
+    nazad.addEventListener("click", vratiNazad);
+    
+    function vratiNazad(){
+        divPrekrivac.style.display = "none";
+    }
+</script>

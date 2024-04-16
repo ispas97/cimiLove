@@ -1,0 +1,68 @@
+
+<div class="profilWrapper" >
+    <div class="ceoProfilSaDugmetom">
+        <div class="divProfil">
+                <img height="150" width="200" src="<%=korisnik.coverImagePath%>" alt="">  
+            <div class="infoProfile">
+                <h5>Ime: <span class="licneInfo"><%= korisnik.ime %></span> </h5>
+                <h5>Prezime: <span class="licneInfo"><%= korisnik.prezime %></span> </h5>
+                <h5>Rating: <span class="licneInfo">4.6</span> </h5>
+            </div>
+        </div>
+        <a href="/korisnici/<% korisnik.id %>" class="buttonOglas">View profile</a>
+    </div>
+</div>
+
+<hr>
+
+<h1 class="naslov">Prikaz oglasa</h2>
+
+<div class="oglas">
+    <% if (oglas.svrhaOglasa === "tcis") {%>
+        <%- include("../partials/showOglasePartials/trazimCimeraImamStan.ejs") %>
+    <%} else if(oglas.svrhaOglasa === "tcns") {%> 
+        <%- include("../partials/showOglasePartials/trazimCimeraNemamStan.ejs") %>
+    <% } else { %>
+        <%- include("../partials/showOglasePartials/izdajemStan.ejs") %> 
+    <% } %> 
+    <% if (user.username===korisnik.username || user.role==="admin") { %>
+    <div class="dugmadWrapper">
+        <a href="/oglasi/<%= oglas.id %>/edit" class="buttonOglas">Edit</a>
+        <%- include("../partials/deleteForm", { url: `/oglasi/${oglas.id}`}) %> 
+    </div>
+    <% } %>
+    <% oglas.komentari.forEach( (kom,index) => { %>
+        <div><a href="/korisnici/<%= kom.user%>"><%= kom.username%>: </a><%=kom.sadrzaj%></div>
+        <% if (user.username===kom.username) { %>
+        <form action="/oglasi/komentari/<%=oglas.id%>?_method=DELETE" method="POST">
+            <input type="number" name="index" value="<%=index%>" hidden>
+            <button type="submit" class="buttonKomentar">Delete</button>
+        </form>
+        <% } %>
+    <% }) %>
+    <% if (user.username!==korisnik.username && user.username!=="anonimus") { %>
+    <form action="/oglasi/<%= oglas.id %>" method="POST">
+        <% if (mozeDaGlasa==true) { %>
+            <div class="sadrzi">
+                <label>Oceni:</label>
+                <div class="rating">
+                    <input type="radio" name="star" id="star1" value='5'><label for="star1">
+                    </label>
+                    <input type="radio" name="star" id="star2" value='4'><label for="star2">
+                    </label>
+                    <input type="radio" name="star" id="star3" value='3'><label for="star3">
+                    </label>
+                    <input type="radio" name="star" id="star4" value='2'><label for="star4">
+                    </label>
+                    <input type="radio" name="star" id="star5" value='1'><label for="star5">
+                    </label>
+                </div>
+            </div>
+            <button type="submit">Glasaj</button>
+        <% } %>
+        <div>
+            <label>Komentarisi:</label>
+            <input type="text"  name="komentar"><button type="submit">Postavi</button>
+        </div>
+    </form>
+    <% } %>

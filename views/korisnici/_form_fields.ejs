@@ -1,0 +1,19 @@
+<div>
+    <label>Ime</label>
+    <input type="text" name="ime" value="<%= korisnik.ime %>" required>
+</div>
+
+<div>
+    <label>Prezime</label>
+    <input type="text" name="prezime" value="<%= korisnik.prezime %>" required>
+</div>
+
+<div style="width: 100px; height: 190px;">
+    <label>Profilna slika</label>
+    <input type="file" name="profilnaSlika" class="filepond">
+</div>
+
+<div>
+    <label>Napisi ukratko o sebi</label>
+    <textarea name="opis"><%= korisnik.opis %></textarea>
+</div>

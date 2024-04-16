@@ -1,0 +1,22 @@
+<h2 style="padding-top: 20px;"></h2>
+<% korisnici.forEach(korisnik => { %> 
+    <div style="border: 2px solid black; margin: 10px 20px 10px 20px;cursor: pointer; padding-left: 15px;">
+        <div><%= korisnik.ime %> </div>
+        <div>
+            <img height="150" width="100" src="<%=korisnik.coverImagePath%>" alt="">
+        </div>
+        <a href="/korisnici/<%= korisnik.id %>" class="ispred">View</a>
+<% if (korisnik.username===user.username || user.role==="admin") { %>
+        <a href="/korisnici/<%= korisnik.id %>/edit" class="ispred">Edit</a>
+        <%- include("../partials/deleteForm", 
+                { url: `/korisnici/${korisnik.id}`}) %> 
+<% } %>
+    <% if (user.role==="admin" || (user.username!==korisnik.username && user.username!=="anonimus")) { %>
+    <form action="/korisnici/<%=korisnik.id%>/<%= user.id %>" method="POST">
+        <input type="text" name="idkorisnika" value="<%=korisnik.id%>" hidden>
+        <button type="submit">Chat</button>
+    </form>
+    <% } %>
+    </div>
+    
+<% }) %> 
